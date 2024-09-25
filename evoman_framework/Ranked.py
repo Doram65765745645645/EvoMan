@@ -20,19 +20,19 @@ import numpy as np
 import glob, os
 
 # choose this for not using visuals and thus making experiments faster
-headless = True
+headless = False
 if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
 
-experiment_name = 'Ranked_test'
+experiment_name = 'Ranked_test12'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
 n_hidden_neurons = 10
 dom_u = 1
 dom_l = -1
-npop = 500
-gens = 10
+npop = 100
+gens = 20
 mutation = 0.3
 last_best = 0
 elite_size = 0.05  # Retain the top 5% individuals as elites
@@ -157,12 +157,15 @@ def doomsday(pop, fit_pop):
 
 
 def rank_selection(pop, fit_pop):
-    sorted_indices = np.argsort(fit_pop)[::-1]  # Sort fitness values in descending order
+    sorted_indices = np.argsort(fit_pop)[::1]  # Sort fitness values in descending order
     ranks = np.arange(1, len(fit_pop) + 1)  # Create ranks from 1 to number of individuals
     probs = ranks / np.sum(ranks)  # Normalize ranks to get selection probabilities
 
     chosen_indices = np.random.choice(sorted_indices, size=npop, replace=True, p=probs)  # Select individuals based on ranks
     return pop[chosen_indices], fit_pop[chosen_indices]
+
+
+
 
 
 # loads file with the best solution for testing
@@ -227,13 +230,15 @@ for i in range(ini_g + 1, gens):
     pop = np.vstack((pop, offspring))
     fit_pop = np.append(fit_pop, fit_offspring)
 
-    # Apply ranked selection
-    pop, fit_pop = rank_selection(pop, fit_pop)
+
+
 
     best = np.argmax(fit_pop)  # best solution in generation
     fit_pop[best] = float(evaluate(np.array([pop[best]]))[0])  # repeats best eval, for stability issues
     best_sol = fit_pop[best]
 
+    # Apply ranked selection
+    pop, fit_pop = rank_selection(pop, fit_pop)
     # # selection
     # fit_pop_cp = fit_pop
     # fit_pop_norm = np.array(list(map(lambda y: norm(y, fit_pop_cp),

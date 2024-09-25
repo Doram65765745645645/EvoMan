@@ -21,15 +21,15 @@ headless = False
 if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
 
-experiment_name = 'Elitism2_test'
+experiment_name = 'Elitism2_test12'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
 n_hidden_neurons = 10
 dom_u = 1
 dom_l = -1
-npop = 500
-gens = 10
+npop = 100
+gens = 20
 mutation = 0.3
 last_best = 0
 elite_size = 0.05  # Retain the top 5% individuals as elites
@@ -44,7 +44,7 @@ env = Environment(experiment_name=experiment_name,
                   enemymode="static",
                   level=2,
                   speed="fastest",
-                  visuals=True)
+                  visuals=False)
 
 # default environment fitness is assumed for experiment
 
@@ -231,13 +231,12 @@ for i in range(ini_g + 1, gens):
     pop = np.vstack((pop, offspring))
     fit_pop = np.append(fit_pop, fit_offspring)
 
-    # Apply elitist selection
-    pop, fit_pop = elitist_selection(fit_pop, pop, elite_size=0.05)
-
     best = np.argmax(fit_pop)  # best solution in generation
     fit_pop[best] = float(evaluate(np.array([pop[best]]))[0])  # repeats best eval, for stability issues
     best_sol = fit_pop[best]
 
+    # Apply elitist selection
+    pop, fit_pop = elitist_selection(fit_pop, pop, elite_size=0.05)
     # # selection
     # fit_pop_cp = fit_pop
     # fit_pop_norm = np.array(list(map(lambda y: norm(y, fit_pop_cp),
